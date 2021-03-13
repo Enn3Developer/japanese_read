@@ -18,10 +18,12 @@ impl Char {
     }
 }
 
-pub fn read_random_file(file_type: Char) -> String {
-    let mut entries = fs::read_dir(format!("japanese_texts/{}", file_type.type_to_str())).unwrap()
+pub fn read_random_file(file_type: &Char) -> String {
+    let mut entries = fs::read_dir(format!("japanese_texts/{}", file_type.type_to_str()))
+        .unwrap()
         .map(|res| res.map(|e| e.path()))
-        .collect::<Result<Vec<_>, io::Error>>().unwrap();
+        .collect::<Result<Vec<_>, io::Error>>()
+        .unwrap();
     entries.shuffle(&mut rand::thread_rng());
     fs::read_to_string(&entries[0]).unwrap()
 }
@@ -38,9 +40,13 @@ pub fn report_error(user_input: &str, expected: &str) {
     for i in 0..vec_user.len() {
         if index < diff.len() && diff[index] == i {
             index += 1;
-            error.push_str(&format!("{}{}{}", color::Fg(color::Red), vec_user[i], color::Fg(color::Reset)));
-        }
-        else {
+            error.push_str(&format!(
+                "{}{}{}",
+                color::Fg(color::Red),
+                vec_user[i],
+                color::Fg(color::Reset)
+            ));
+        } else {
             error.push(vec_user[i]);
         }
     }
@@ -50,9 +56,13 @@ pub fn report_error(user_input: &str, expected: &str) {
     for i in 0..vec_expected.len() {
         if index < diff.len() && diff[index] == i {
             index += 1;
-            right.push_str(&format!("{}{}{}", color::Fg(color::Green), vec_expected[i], color::Fg(color::Reset)));
-        }
-        else {
+            right.push_str(&format!(
+                "{}{}{}",
+                color::Fg(color::Green),
+                vec_expected[i],
+                color::Fg(color::Reset)
+            ));
+        } else {
             right.push(vec_expected[i]);
         }
     }

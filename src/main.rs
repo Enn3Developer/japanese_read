@@ -1,7 +1,7 @@
-use std::{fs, io};
-use japanese_read::{report_error, read_random_file, Char};
-use wana_kana::to_hiragana::to_hiragana;
+use japanese_read::{read_random_file, report_error, Char};
+use std::io;
 use std::process::exit;
+use wana_kana::to_hiragana::to_hiragana;
 use wana_kana::to_katakana::to_katakana;
 
 fn main() {
@@ -15,11 +15,13 @@ fn main() {
         2 => file_type = Char::Katakana,
         _ => exit(1),
     }
-    let file = read_random_file(file_type);
-    for line in  file.lines() {
+    let file = read_random_file(&file_type);
+    for line in file.lines() {
         let mut user_input = String::new();
         println!("{}", line);
-        io::stdin().read_line(&mut user_input).expect("Cannot read line");
+        io::stdin()
+            .read_line(&mut user_input)
+            .expect("Cannot read line");
         user_input.pop();
         match file_type {
             Char::Hiragana => user_input = to_hiragana(&user_input),
