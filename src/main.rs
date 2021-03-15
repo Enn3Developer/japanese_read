@@ -1,8 +1,10 @@
-use japanese_read::{read_random_file, report_error, stop, Char};
 use std::io;
 use std::process::exit;
+
 use wana_kana::to_hiragana::to_hiragana;
 use wana_kana::to_katakana::to_katakana;
+
+use japanese_read::{read_random_file, report_error, stop, Char};
 
 fn run(file_type: Char) {
     let file = read_random_file(&file_type);
@@ -23,7 +25,7 @@ fn run(file_type: Char) {
             Char::Hiragana => user_input = to_hiragana(&user_input),
             Char::Katakana => user_input = to_katakana(&user_input),
         }
-        if &user_input != line {
+        if user_input != line {
             // if the two periods are not the same, then there is an error (from the user)
             // we need to report this error
             println!();

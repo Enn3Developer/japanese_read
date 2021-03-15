@@ -1,6 +1,6 @@
 use differ::{Differ, Tag};
 use rand::seq::SliceRandom;
-use std::{fs, io};
+use rust_embed::RustEmbed;
 use termion::color;
 use wana_kana::to_romaji::*;
 
@@ -15,6 +15,10 @@ macro_rules! stop {
         }
     };
 }
+
+#[derive(RustEmbed)]
+#[folder = "japanese_texts"]
+struct Asset;
 
 pub enum Char {
     Hiragana,
@@ -32,15 +36,17 @@ impl Char {
 
 pub fn read_random_file(file_type: &Char) -> String {
     // Read a random file given the file_type
-    let mut entries = fs::read_dir(format!("japanese_texts/{}", file_type.type_to_str()))
-        .unwrap()
-        .map(|res| res.map(|e| e.path()))
-        .collect::<Result<Vec<_>, io::Error>>()
-        .unwrap();
+    let mut entries = Vec::new();
+    for file in Asset::iter() {
+        if file.contains(file_type.type_to_str()) {
+            entries.push(file);
+        }
+    }
+    assert!(!entries.is_empty());
     entries.shuffle(&mut rand::thread_rng());
     // if there aren't any file then the program should crash before we try
     // to access a non-existent address (`entries[0]`)
-    fs::read_to_string(&entries[0]).unwrap()
+    String::from_utf8(Asset::get(&entries[0]).unwrap().as_ref().to_vec()).unwrap()
 }
 
 pub fn report_error(user_input: &str, expected: &str) {
@@ -53,35 +59,35 @@ pub fn report_error(user_input: &str, expected: &str) {
     let mut error = String::new();
     let mut right = String::new();
 
-    for i in 0..vec_user.len() {
+    for (i, character) in vec_user.iter().enumerate() {
         if index < diff.len() && diff[index] == i {
             index += 1;
             // Work on the errors
             error.push_str(&format!(
                 "{}{}{}",
                 color::Fg(color::Red),
-                vec_user[i],
+                character,
                 color::Fg(color::Reset)
             ));
         } else {
-            error.push(vec_user[i]);
+            error.push(*character);
         }
     }
 
     index = 0;
 
-    for i in 0..vec_expected.len() {
+    for (i, character) in vec_expected.iter().enumerate() {
         if index < diff.len() && diff[index] == i {
             index += 1;
             // The same as above but the right version
             right.push_str(&format!(
                 "{}{}{}",
                 color::Fg(color::Green),
-                vec_expected[i],
+                character,
                 color::Fg(color::Reset)
             ));
         } else {
-            right.push(vec_expected[i]);
+            right.push(*character);
         }
     }
 
@@ -99,7 +105,7 @@ pub fn report_error(user_input: &str, expected: &str) {
     );
 }
 
-fn find_differences(vec_user: &Vec<char>, vec_expected: &Vec<char>) -> Vec<usize> {
+fn find_differences(vec_user: &[char], vec_expected: &[char]) -> Vec<usize> {
     let mut diff: Vec<usize> = vec![];
     let differ = Differ::new(vec_expected, vec_user);
     for span in differ.spans() {
