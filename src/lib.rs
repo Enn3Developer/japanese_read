@@ -1,7 +1,7 @@
+use colored::*;
 use differ::{Differ, Tag};
 use rand::seq::SliceRandom;
 use rust_embed::RustEmbed;
-use termion::color;
 use wana_kana::to_romaji::*;
 
 #[macro_export]
@@ -64,10 +64,9 @@ pub fn report_error(user_input: &str, expected: &str) {
             index += 1;
             // Work on the errors
             error.push_str(&format!(
-                "{}{}{}",
-                color::Fg(color::Red),
-                character,
-                color::Fg(color::Reset)
+                "{}{}",
+                character.to_string().red(),
+                "".normal().clear(),
             ));
         } else {
             error.push(*character);
@@ -81,27 +80,20 @@ pub fn report_error(user_input: &str, expected: &str) {
             index += 1;
             // The same as above but the right version
             right.push_str(&format!(
-                "{}{}{}",
-                color::Fg(color::Green),
-                character,
-                color::Fg(color::Reset)
+                "{}{}",
+                character.to_string().green(),
+                "".normal().clear(),
             ));
         } else {
             right.push(*character);
         }
     }
 
+    println!("{}{}", "Error: ".red(), to_romaji(&error).normal().clear(), );
     println!(
-        "{}Error: {}{}",
-        color::Fg(color::Red),
-        color::Fg(color::Reset),
-        to_romaji(&error)
-    );
-    println!(
-        "{}Right: {}{}",
-        color::Fg(color::Green),
-        color::Fg(color::Reset),
-        to_romaji(&right)
+        "{}{}",
+        "Right: ".green(),
+        to_romaji(&right).normal().clear(),
     );
 }
 

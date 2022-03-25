@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 wana_kana = "2.0.1"
-termion = "1.5.6"
+colored = "2"
 differ = "1.0.1"
 rand = "0.8.3"
 rust-embed = "5.9.0"

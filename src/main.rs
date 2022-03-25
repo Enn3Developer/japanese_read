@@ -4,7 +4,7 @@ use std::process::exit;
 use wana_kana::to_hiragana::to_hiragana;
 use wana_kana::to_katakana::to_katakana;
 
-use japanese_read::{read_random_file, report_error, stop, Char};
+use japanese_read::{Char, read_random_file, report_error, stop};
 
 fn run(file_type: Char) {
     let file = read_random_file(&file_type);
@@ -36,23 +36,25 @@ fn run(file_type: Char) {
 }
 
 fn main() {
+    // This is a workaround to enable terminal colors in Windows
+    #[cfg(windows)]
+    colored::control::set_virtual_terminal(true);
     loop {
         println!("Choose:\n0. Exit\n1. Hiragana\n2. Katakana");
         // Read the choice
         let mut choice = String::new();
         io::stdin().read_line(&mut choice).unwrap();
         let choice = choice.trim().parse::<usize>().unwrap();
-        let file_type: Char;
-        match choice {
+        let file_type = match choice {
             // compute the choice
             0 => stop!(),
-            1 => file_type = Char::Hiragana,
-            2 => file_type = Char::Katakana,
+            1 => Char::Hiragana,
+            2 => Char::Katakana,
             _ => {
                 println!("Invalid choice");
                 continue;
             }
-        }
+        };
         // if the choice is valid, pass `file_type` with his ownership (we don't need it anymore)
         run(file_type);
     }
