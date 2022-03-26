@@ -85,7 +85,7 @@ fn main() {
         match file_type {
             Char::Hiragana => run_kana(file_type),
             Char::Katakana => run_kana(file_type),
-            Char::Kanji => run_kanji()
+            Char::Kanji => run_kanji(),
         }
     }
 }

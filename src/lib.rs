@@ -40,7 +40,7 @@ pub fn read_random_file_kana() -> String {
     // if there aren't any file then the program should crash before we try
     // to access a non-existent address (`entries.first()`)
     String::from_utf8(
-        Asset::get(&entries.first().unwrap())
+        Asset::get(entries.first().unwrap())
             .unwrap()
             .as_ref()
             .to_vec(),
@@ -62,7 +62,7 @@ pub fn read_random_file_kanji() -> (String, String) {
     // to access a non-existent address (`entries.first()`)
     (
         String::from_utf8(
-            Asset::get(&entries.first().unwrap())
+            Asset::get(entries.first().unwrap())
                 .unwrap()
                 .as_ref()
                 .to_vec(),
